@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.mine.mapper.SysOrderMapper">
+    
+    <resultMap type="SysOrder" id="SysOrderResult">
+        <result property="orderId"    column="order_id"    />
+        <result property="companyId"    column="company_id"    />
+        <result property="orderDate"    column="order_date"    />
+        <result property="amount"    column="amount"    />
+    </resultMap>
+
+    <sql id="selectSysOrderVo">
+        select order_id, company_id, order_date, amount from sys_order
+    </sql>
+
+    <select id="selectSysOrderList" parameterType="SysOrder" resultMap="SysOrderResult">
+        <include refid="selectSysOrderVo"/>
+        <where>  
+            <if test="companyId != null "> and company_id = #{companyId}</if>
+            <if test="orderDate != null "> and order_date = #{orderDate}</if>
+            <if test="amount != null "> and amount = #{amount}</if>
+        </where>
+    </select>
+    
+    <select id="selectSysOrderByOrderId" parameterType="Long" resultMap="SysOrderResult">
+        <include refid="selectSysOrderVo"/>
+        where order_id = #{orderId}
+    </select>
+        
+    <insert id="insertSysOrder" parameterType="SysOrder" useGeneratedKeys="true" keyProperty="orderId">
+        insert into sys_order
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="companyId != null">company_id,</if>
+            <if test="orderDate != null">order_date,</if>
+            <if test="amount != null">amount,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="companyId != null">#{companyId},</if>
+            <if test="orderDate != null">#{orderDate},</if>
+            <if test="amount != null">#{amount},</if>
+         </trim>
+    </insert>
+
+    <update id="updateSysOrder" parameterType="SysOrder">
+        update sys_order
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="companyId != null">company_id = #{companyId},</if>
+            <if test="orderDate != null">order_date = #{orderDate},</if>
+            <if test="amount != null">amount = #{amount},</if>
+        </trim>
+        where order_id = #{orderId}
+    </update>
+
+    <delete id="deleteSysOrderByOrderId" parameterType="Long">
+        delete from sys_order where order_id = #{orderId}
+    </delete>
+
+    <delete id="deleteSysOrderByOrderIds" parameterType="String">
+        delete from sys_order where order_id in 
+        <foreach item="orderId" collection="array" open="(" separator="," close=")">
+            #{orderId}
+        </foreach>
+    </delete>
+</mapper>

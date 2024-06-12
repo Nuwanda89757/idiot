@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.mine.mapper.SysCompanyMapper">
+    
+    <resultMap type="SysCompany" id="SysCompanyResult">
+        <result property="companyId"    column="company_id"    />
+        <result property="companyName"    column="company_name"    />
+        <result property="companyAddress"    column="company_address"    />
+        <result property="industry"    column="industry"    />
+        <result property="companySize"    column="company_size"    />
+    </resultMap>
+
+    <sql id="selectSysCompanyVo">
+        select company_id, company_name, company_address, industry, company_size from sys_company
+    </sql>
+
+    <select id="selectSysCompanyList" parameterType="SysCompany" resultMap="SysCompanyResult">
+        <include refid="selectSysCompanyVo"/>
+        <where>  
+            <if test="companyName != null  and companyName != ''"> and company_name like concat('%', #{companyName}, '%')</if>
+            <if test="companyAddress != null  and companyAddress != ''"> and company_address = #{companyAddress}</if>
+            <if test="industry != null  and industry != ''"> and industry = #{industry}</if>
+            <if test="companySize != null  and companySize != ''"> and company_size = #{companySize}</if>
+        </where>
+    </select>
+    
+    <select id="selectSysCompanyByCompanyId" parameterType="Long" resultMap="SysCompanyResult">
+        <include refid="selectSysCompanyVo"/>
+        where company_id = #{companyId}
+    </select>
+        
+    <insert id="insertSysCompany" parameterType="SysCompany" useGeneratedKeys="true" keyProperty="companyId">
+        insert into sys_company
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="companyName != null and companyName != ''">company_name,</if>
+            <if test="companyAddress != null">company_address,</if>
+            <if test="industry != null">industry,</if>
+            <if test="companySize != null">company_size,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="companyName != null and companyName != ''">#{companyName},</if>
+            <if test="companyAddress != null">#{companyAddress},</if>
+            <if test="industry != null">#{industry},</if>
+            <if test="companySize != null">#{companySize},</if>
+         </trim>
+    </insert>
+
+    <update id="updateSysCompany" parameterType="SysCompany">
+        update sys_company
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="companyName != null and companyName != ''">company_name = #{companyName},</if>
+            <if test="companyAddress != null">company_address = #{companyAddress},</if>
+            <if test="industry != null">industry = #{industry},</if>
+            <if test="companySize != null">company_size = #{companySize},</if>
+        </trim>
+        where company_id = #{companyId}
+    </update>
+
+    <delete id="deleteSysCompanyByCompanyId" parameterType="Long">
+        delete from sys_company where company_id = #{companyId}
+    </delete>
+
+    <delete id="deleteSysCompanyByCompanyIds" parameterType="String">
+        delete from sys_company where company_id in 
+        <foreach item="companyId" collection="array" open="(" separator="," close=")">
+            #{companyId}
+        </foreach>
+    </delete>
+</mapper>

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.mine.mapper.SysEmployeeMapper">
+    
+    <resultMap type="SysEmployee" id="SysEmployeeResult">
+        <result property="employeeId"    column="employee_id"    />
+        <result property="employeeName"    column="employee_name"    />
+        <result property="employeePosition"    column="employee_position"    />
+        <result property="startDate"    column="start_date"    />
+        <result property="endDate"    column="end_date"    />
+    </resultMap>
+
+    <sql id="selectSysEmployeeVo">
+        select employee_id, employee_name, employee_position, start_date, end_date from sys_employee
+    </sql>
+
+    <select id="selectSysEmployeeList" parameterType="SysEmployee" resultMap="SysEmployeeResult">
+        <include refid="selectSysEmployeeVo"/>
+        <where>  
+            <if test="employeeName != null  and employeeName != ''"> and employee_name like concat('%', #{employeeName}, '%')</if>
+            <if test="employeePosition != null  and employeePosition != ''"> and employee_position = #{employeePosition}</if>
+            <if test="startDate != null "> and start_date = #{startDate}</if>
+            <if test="endDate != null "> and end_date = #{endDate}</if>
+        </where>
+    </select>
+    
+    <select id="selectSysEmployeeByEmployeeId" parameterType="Long" resultMap="SysEmployeeResult">
+        <include refid="selectSysEmployeeVo"/>
+        where employee_id = #{employeeId}
+    </select>
+        
+    <insert id="insertSysEmployee" parameterType="SysEmployee" useGeneratedKeys="true" keyProperty="employeeId">
+        insert into sys_employee
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="employeeName != null">employee_name,</if>
+            <if test="employeePosition != null">employee_position,</if>
+            <if test="startDate != null">start_date,</if>
+            <if test="endDate != null">end_date,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="employeeName != null">#{employeeName},</if>
+            <if test="employeePosition != null">#{employeePosition},</if>
+            <if test="startDate != null">#{startDate},</if>
+            <if test="endDate != null">#{endDate},</if>
+         </trim>
+    </insert>
+
+    <update id="updateSysEmployee" parameterType="SysEmployee">
+        update sys_employee
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="employeeName != null">employee_name = #{employeeName},</if>
+            <if test="employeePosition != null">employee_position = #{employeePosition},</if>
+            <if test="startDate != null">start_date = #{startDate},</if>
+            <if test="endDate != null">end_date = #{endDate},</if>
+        </trim>
+        where employee_id = #{employeeId}
+    </update>
+
+    <delete id="deleteSysEmployeeByEmployeeId" parameterType="Long">
+        delete from sys_employee where employee_id = #{employeeId}
+    </delete>
+
+    <delete id="deleteSysEmployeeByEmployeeIds" parameterType="String">
+        delete from sys_employee where employee_id in 
+        <foreach item="employeeId" collection="array" open="(" separator="," close=")">
+            #{employeeId}
+        </foreach>
+    </delete>
+</mapper>

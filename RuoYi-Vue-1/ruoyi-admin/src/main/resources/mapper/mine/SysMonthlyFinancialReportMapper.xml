@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.mine.mapper.SysMonthlyFinancialReportMapper">
+    
+    <resultMap type="SysMonthlyFinancialReport" id="SysMonthlyFinancialReportResult">
+        <result property="reportId"    column="report_id"    />
+        <result property="companyId"    column="company_id"    />
+        <result property="year"    column="year"    />
+        <result property="month"    column="month"    />
+        <result property="revenue"    column="revenue"    />
+        <result property="profit"    column="profit"    />
+    </resultMap>
+
+    <sql id="selectSysMonthlyFinancialReportVo">
+        select report_id, company_id, year, month, revenue, profit from sys_monthly_financial_report
+    </sql>
+
+    <select id="selectSysMonthlyFinancialReportList" parameterType="SysMonthlyFinancialReport" resultMap="SysMonthlyFinancialReportResult">
+        <include refid="selectSysMonthlyFinancialReportVo"/>
+        <where>  
+            <if test="companyId != null "> and company_id = #{companyId}</if>
+            <if test="year != null "> and year = #{year}</if>
+            <if test="month != null "> and month = #{month}</if>
+            <if test="revenue != null "> and revenue = #{revenue}</if>
+            <if test="profit != null "> and profit = #{profit}</if>
+        </where>
+    </select>
+    
+    <select id="selectSysMonthlyFinancialReportByReportId" parameterType="Long" resultMap="SysMonthlyFinancialReportResult">
+        <include refid="selectSysMonthlyFinancialReportVo"/>
+        where report_id = #{reportId}
+    </select>
+        
+    <insert id="insertSysMonthlyFinancialReport" parameterType="SysMonthlyFinancialReport" useGeneratedKeys="true" keyProperty="reportId">
+        insert into sys_monthly_financial_report
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="companyId != null">company_id,</if>
+            <if test="year != null">year,</if>
+            <if test="month != null">month,</if>
+            <if test="revenue != null">revenue,</if>
+            <if test="profit != null">profit,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="companyId != null">#{companyId},</if>
+            <if test="year != null">#{year},</if>
+            <if test="month != null">#{month},</if>
+            <if test="revenue != null">#{revenue},</if>
+            <if test="profit != null">#{profit},</if>
+         </trim>
+    </insert>
+
+    <update id="updateSysMonthlyFinancialReport" parameterType="SysMonthlyFinancialReport">
+        update sys_monthly_financial_report
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="companyId != null">company_id = #{companyId},</if>
+            <if test="year != null">year = #{year},</if>
+            <if test="month != null">month = #{month},</if>
+            <if test="revenue != null">revenue = #{revenue},</if>
+            <if test="profit != null">profit = #{profit},</if>
+        </trim>
+        where report_id = #{reportId}
+    </update>
+
+    <delete id="deleteSysMonthlyFinancialReportByReportId" parameterType="Long">
+        delete from sys_monthly_financial_report where report_id = #{reportId}
+    </delete>
+
+    <delete id="deleteSysMonthlyFinancialReportByReportIds" parameterType="String">
+        delete from sys_monthly_financial_report where report_id in 
+        <foreach item="reportId" collection="array" open="(" separator="," close=")">
+            #{reportId}
+        </foreach>
+    </delete>
+</mapper>
